@@ -4,6 +4,8 @@ use vercel_runtime::{
     Error, Request, RequestPayloadExt, Response, ServiceBuilder, StatusCode,
 };
 
+use image::{DynamicImage, imageops};
+
 #[tokio::main]
 async fn main() -> Result<(), Error> {
     tracing_subscriber
@@ -37,8 +39,22 @@ pub async fn handler(req: Request) -> Result<Response<Body>, Error> {
 }
 
 pub async fn handle_get_request(req: Request) -> Result<Response<Body>, Error> {
-    let frame_image =
-        "https://upload.wikimedia.org/wikipedia/commons/6/6c/Star_Wars_Logo.svg";
+
+    let head: u16 = 282;
+    let body: u16 = 25;
+
+    let sprite_base_url = "https://fusioncalc.com/wp-content/themes/twentytwentyone/pokemon/custom-fusion-sprites-main/CustomBattlers/";
+
+    let fusion1_image = format!(
+        "{}{}.{}.png",
+        sprite_base_url,
+        head,
+        body
+    );
+    
+
+    let frame_image = fusion1_image;
+        // "https://upload.wikimedia.org/wikipedia/commons/6/6c/Star_Wars_Logo.svg";
     let frame_post_url = req.uri();
     let html_content = format!(
         r#"<!DOCTYPE html>
@@ -48,11 +64,11 @@ pub async fn handle_get_request(req: Request) -> Result<Response<Body>, Error> {
                 <meta property="fc:frame" content="vNext" />
                 <meta property="fc:frame:post_url" content="{1}" />
                 <meta property="fc:frame:image" content="{0}" />
-                <meta property="fc:frame:button:1" content="What Star Wars guy am I?" />
+                <meta property="fc:frame:button:1" content="Woah, Cool Fusion!" />
                 <title>Farcaster Frames Template</title>
             </head>
             <body>
-                <h1>What Star Wars guy am I?</h1>
+                <h1>Woah, Cool Fusion!</h1>
             </body>
             </html>"#,
         frame_image, frame_post_url
